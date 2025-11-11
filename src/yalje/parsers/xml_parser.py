@@ -4,7 +4,6 @@ from typing import Optional
 
 from lxml import etree
 
-from yalje.core.exceptions import ParsingError
 from yalje.models.comment import Comment
 from yalje.models.post import Post
 from yalje.models.user import User

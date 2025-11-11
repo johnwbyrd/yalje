@@ -75,7 +75,7 @@ class JSONExporter:
             ExportError: If load fails
         """
         try:
-            with open(input_path, "r", encoding="utf-8") as f:
+            with open(input_path, encoding="utf-8") as f:
                 data = json.load(f)
             return LJExport(**data)
         except Exception as e:

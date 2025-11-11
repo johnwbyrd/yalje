@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-import yaml
-
 from yalje.core.exceptions import ExportError
 from yalje.models.export import LJExport
 

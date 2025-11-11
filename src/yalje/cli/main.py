@@ -16,8 +16,7 @@ def cli() -> None:
 
 
 # Import commands to register them
-from yalje.cli.commands import auth, download, convert  # noqa: E402, F401
-
+from yalje.cli.commands import auth, convert, download  # noqa: E402, F401
 
 if __name__ == "__main__":
     cli()

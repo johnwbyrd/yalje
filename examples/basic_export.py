@@ -1,11 +1,12 @@
 """Basic example of exporting LiveJournal data."""
 
+from yalje.api.comments import CommentsClient
+from yalje.api.posts import PostsClient
 from yalje.core.auth import Authenticator
 from yalje.core.config import YaljeConfig
-from yalje.api.posts import PostsClient
-from yalje.api.comments import CommentsClient
-from yalje.models.export import LJExport, ExportMetadata
 from yalje.exporters.yaml_exporter import YAMLExporter
+from yalje.models.export import ExportMetadata, LJExport
+
 
 def main():
     # Create configuration
@@ -42,7 +43,7 @@ def main():
     exporter = YAMLExporter()
     exporter.export(export, "lj-backup.yaml")
 
-    print(f"Export complete! Saved to lj-backup.yaml")
+    print("Export complete! Saved to lj-backup.yaml")
     print(f"  Posts: {len(posts)}")
     print(f"  Comments: {len(comments)}")
 

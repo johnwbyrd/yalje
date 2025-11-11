@@ -1,11 +1,9 @@
 """HTML parser for LiveJournal inbox pages."""
 
-import re
 from typing import Optional
 
-from lxml import etree, html
+from lxml import etree
 
-from yalje.core.exceptions import ParsingError
 from yalje.models.inbox import InboxMessage
 from yalje.models.user import InboxSender
 

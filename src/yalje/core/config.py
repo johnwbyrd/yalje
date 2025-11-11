@@ -65,7 +65,7 @@ class YaljeConfig(BaseModel):
         """Load configuration from a YAML file."""
         import yaml
 
-        with open(path, "r") as f:
+        with open(path) as f:
             data = yaml.safe_load(f)
         return cls(**data)
 

@@ -1,7 +1,6 @@
 """Top-level export model containing all LiveJournal data."""
 
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -91,7 +90,7 @@ class LJExport(BaseModel):
         Returns:
             LJExport instance
         """
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return cls.from_yaml(f.read())
 
     def to_file(self, path: str) -> None:

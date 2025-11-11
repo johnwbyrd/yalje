@@ -1,8 +1,7 @@
 """Tests for data models."""
 
-from yalje.models.post import Post
-from yalje.models.comment import Comment
 from yalje.models.export import LJExport
+from yalje.models.post import Post
 
 
 def test_post_jitemid_calculation():

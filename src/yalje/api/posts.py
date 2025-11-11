@@ -5,7 +5,6 @@ from typing import Iterator
 
 from yalje.api.base import BaseAPIClient
 from yalje.core.config import YaljeConfig
-from yalje.core.exceptions import APIError
 from yalje.core.session import HTTPSession
 from yalje.models.post import Post
 
