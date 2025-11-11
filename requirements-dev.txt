@@ -1,0 +1,19 @@
+# Install runtime dependencies first
+-r requirements.txt
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
+# Type checking
+mypy>=1.5.0
+types-requests
+types-pyyaml
+types-python-dateutil
+
+# Code quality (linting + formatting)
+ruff>=0.1.0
+
+# Git hooks
+pre-commit>=3.3.0
