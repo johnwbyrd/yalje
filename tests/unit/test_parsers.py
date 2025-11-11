@@ -35,6 +35,20 @@ def sample_posts_single_xml(fixtures_dir: Path) -> str:
         return f.read()
 
 
+@pytest.fixture
+def sample_comment_meta_xml(fixtures_dir: Path) -> str:
+    """Load sample comment metadata XML."""
+    with open(fixtures_dir / "sample_comment_meta.xml") as f:
+        return f.read()
+
+
+@pytest.fixture
+def sample_comment_meta_empty_xml(fixtures_dir: Path) -> str:
+    """Load empty comment metadata XML."""
+    with open(fixtures_dir / "sample_comment_meta_empty.xml") as f:
+        return f.read()
+
+
 class TestXMLParserPosts:
     """Tests for XMLParser.parse_posts()."""
 
@@ -172,3 +186,96 @@ class TestXMLParserPosts:
         assert post.allowmask == 0
         assert post.current_mood is None
         assert post.current_music is None
+
+
+class TestXMLParserCommentMetadata:
+    """Tests for XMLParser.parse_comment_metadata()."""
+
+    def test_parse_comment_metadata(self, sample_comment_meta_xml: str) -> None:
+        """Test parsing comment metadata from XML."""
+        maxid, usermap = XMLParser.parse_comment_metadata(sample_comment_meta_xml)
+
+        # Verify maxid
+        assert maxid == 987654
+
+        # Verify usermap
+        assert len(usermap) == 4
+
+        # Verify first user
+        user1 = usermap[0]
+        assert user1.userid == 123
+        assert user1.username == "friend1"
+
+        # Verify second user
+        user2 = usermap[1]
+        assert user2.userid == 456
+        assert user2.username == "friend2"
+
+        # Verify third user
+        user3 = usermap[2]
+        assert user3.userid == 789
+        assert user3.username == "testuser"
+
+        # Verify fourth user
+        user4 = usermap[3]
+        assert user4.userid == 1001
+        assert user4.username == "anonymous_coward"
+
+    def test_parse_comment_metadata_empty_usermap(self, sample_comment_meta_empty_xml: str) -> None:
+        """Test parsing comment metadata with no users."""
+        maxid, usermap = XMLParser.parse_comment_metadata(sample_comment_meta_empty_xml)
+
+        assert maxid == 0
+        assert len(usermap) == 0
+        assert usermap == []
+
+    def test_parse_comment_metadata_invalid_xml(self) -> None:
+        """Test parsing malformed XML raises ParsingError."""
+        invalid_xml = "<livejournal><maxid>123</livejournal>"
+
+        with pytest.raises(ParsingError, match="Failed to parse XML"):
+            XMLParser.parse_comment_metadata(invalid_xml)
+
+    def test_parse_comment_metadata_missing_maxid(self) -> None:
+        """Test parsing XML without maxid raises ParsingError."""
+        xml_without_maxid = """<?xml version="1.0"?>
+<livejournal>
+  <usermap id="123" user="test" />
+</livejournal>
+"""
+        with pytest.raises(ParsingError, match="Missing required field: maxid"):
+            XMLParser.parse_comment_metadata(xml_without_maxid)
+
+    def test_parse_comment_metadata_invalid_maxid(self) -> None:
+        """Test parsing XML with non-numeric maxid raises ParsingError."""
+        xml_invalid_maxid = """<?xml version="1.0"?>
+<livejournal>
+  <maxid>not_a_number</maxid>
+</livejournal>
+"""
+        with pytest.raises(ParsingError, match="Invalid maxid value"):
+            XMLParser.parse_comment_metadata(xml_invalid_maxid)
+
+    def test_parse_comment_metadata_malformed_usermap(self) -> None:
+        """Test parsing with malformed usermap elements skips them."""
+        xml_malformed_usermap = """<?xml version="1.0"?>
+<livejournal>
+  <maxid>100</maxid>
+  <usermap id="123" user="valid_user" />
+  <usermap user="missing_id" />
+  <usermap id="456" />
+  <usermap id="not_a_number" user="bad_id" />
+  <usermap id="789" user="another_valid" />
+</livejournal>
+"""
+        maxid, usermap = XMLParser.parse_comment_metadata(xml_malformed_usermap)
+
+        # Should have parsed maxid and only valid usermaps
+        assert maxid == 100
+        assert len(usermap) == 2
+
+        # Verify only valid users were parsed
+        assert usermap[0].userid == 123
+        assert usermap[0].username == "valid_user"
+        assert usermap[1].userid == 789
+        assert usermap[1].username == "another_valid"

@@ -117,12 +117,63 @@ class XMLParser:
         Raises:
             ParsingError: If XML parsing fails
         """
-        # TODO: Implement
-        # 1. Parse XML with lxml
-        # 2. Extract <maxid> value
-        # 3. Extract all <usermap> elements
-        # 4. Convert to User objects
-        raise NotImplementedError("XMLParser.parse_comment_metadata not yet implemented")
+        from yalje.core.exceptions import ParsingError
+
+        logger.debug("Parsing comment metadata from XML")
+
+        try:
+            # Parse XML string
+            root = ET.fromstring(xml_string)
+        except ET.ParseError as e:
+            logger.error(f"XML parsing failed: {e}")
+            raise ParsingError(f"Failed to parse XML: {e}") from e
+
+        # Extract maxid (required)
+        maxid_elem = root.find("maxid")
+        if maxid_elem is None or maxid_elem.text is None:
+            logger.error("Missing required field: maxid")
+            raise ParsingError("Missing required field: maxid")
+
+        try:
+            maxid = int(maxid_elem.text)
+        except ValueError as e:
+            logger.error(f"Invalid maxid value: {maxid_elem.text}")
+            raise ParsingError(f"Invalid maxid value: {maxid_elem.text}") from e
+
+        # Extract all usermap elements
+        usermap = []
+        for usermap_elem in root.findall("usermap"):
+            try:
+                # Get attributes
+                userid_str = usermap_elem.get("id")
+                username = usermap_elem.get("user")
+
+                if userid_str is None:
+                    logger.warning("Skipping usermap element without 'id' attribute")
+                    continue
+
+                if username is None:
+                    logger.warning(
+                        f"Skipping usermap element without 'user' attribute (id={userid_str})"
+                    )
+                    continue
+
+                # Convert userid to int
+                userid = int(userid_str)
+
+                # Create User object
+                user = User(userid=userid, username=username)
+                usermap.append(user)
+
+            except ValueError:
+                logger.warning(f"Skipping usermap with invalid userid: {userid_str}")
+                continue
+            except Exception as e:
+                logger.warning(f"Failed to parse usermap element: {e}")
+                continue
+
+        logger.debug(f"  → Parsed maxid={maxid}, {len(usermap)} users from XML")
+        return (maxid, usermap)
 
     @staticmethod
     def parse_comments(xml_string: str) -> list[Comment]:

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<livejournal>
+  <maxid>987654</maxid>
+  <usermap id="123" user="friend1" />
+  <usermap id="456" user="friend2" />
+  <usermap id="789" user="testuser" />
+  <usermap id="1001" user="anonymous_coward" />
+</livejournal>
