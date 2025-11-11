@@ -25,8 +25,23 @@ pre-commit install
 We use:
 - **ruff** for code formatting and linting (replaces black, isort, flake8)
 - **mypy** for type checking
+- **tox** for running all quality checks
 
-Run all checks:
+Run all checks with tox (recommended):
+```bash
+# Run all quality checks (recommended during development)
+tox -e dev
+
+# Run all checks with full coverage report
+tox -e all
+
+# Run specific checks
+tox -e lint          # Linting and formatting checks
+tox -e typecheck     # Type checking
+tox -e format        # Auto-format code (utility)
+```
+
+Or run tools directly:
 ```bash
 # Lint code
 ruff check src/ tests/
@@ -43,6 +58,16 @@ mypy src/yalje
 
 ## Running Tests
 
+With tox (recommended):
+```bash
+# Run tests on current Python version
+tox -e py312
+
+# Run tests on all Python versions (3.9, 3.10, 3.11, 3.12)
+tox
+```
+
+Or run pytest directly:
 ```bash
 # Run all tests
 pytest
@@ -79,6 +104,10 @@ Key files:
 
 3. **Test your changes**
    ```bash
+   # Recommended: Run all checks with tox
+   tox -e dev
+
+   # Or run individually
    pytest
    ruff check --fix src/ tests/
    ruff format src/ tests/

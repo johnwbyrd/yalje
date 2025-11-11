@@ -141,17 +141,24 @@ See [docs/schema.md](docs/schema.md) for complete format specification.
 # Install development dependencies
 pip install -e ".[dev]"
 
-# Run tests
+# Run all quality checks (recommended)
+tox -e dev
+
+# Run full test suite across all Python versions
+tox
+
+# Run specific checks
+tox -e lint          # Linting only
+tox -e typecheck     # Type checking only
+tox -e format        # Auto-format code
+
+# Run tests directly (without tox)
 pytest
 
-# Run type checking
-mypy src/yalje
-
-# Lint and format code (ruff does both)
-ruff check src/ tests/           # Lint
-ruff format src/ tests/          # Format
-ruff check --fix src/ tests/     # Auto-fix issues
+# See DEVELOPMENT.md for complete guide
 ```
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development workflow, pre-commit hooks, and CI setup.
 
 ## Project Status
 
