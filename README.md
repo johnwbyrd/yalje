@@ -1,6 +1,6 @@
 # yalje - Yet Another LiveJournal Exporter
 
-A comprehensive Python tool for downloading and archiving all content from LiveJournal accounts, including posts, comments, and inbox messages.
+A deep, modern Python tool for downloading and archiving all content from LiveJournal accounts, including posts, comments, and inbox messages.
 
 ## Features
 
