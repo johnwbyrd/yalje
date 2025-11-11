@@ -42,14 +42,10 @@ def _validate_posts(posts: list[Post]) -> list[str]:
     if len(itemids) != len(set(itemids)):
         errors.append("Duplicate itemids found in posts")
 
-    # Validate jitemid calculation
-    for post in posts:
-        expected_jitemid = post.itemid >> 8
-        if post.jitemid != expected_jitemid:
-            errors.append(
-                f"Post {post.itemid}: jitemid mismatch "
-                f"(expected {expected_jitemid}, got {post.jitemid})"
-            )
+    # Check for duplicate jitemids (if present)
+    jitemids = [p.jitemid for p in posts if p.jitemid is not None]
+    if len(jitemids) != len(set(jitemids)):
+        errors.append("Duplicate jitemids found in posts")
 
     return errors
 

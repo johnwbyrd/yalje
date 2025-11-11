@@ -48,7 +48,7 @@ class TestXMLParserPosts:
         # Verify first post
         post1 = posts[0]
         assert post1.itemid == 116992
-        assert post1.jitemid == 457  # 116992 >> 8
+        assert post1.jitemid == 457
         assert post1.subject == "First Post Title"
         assert post1.event == "<p>This is the <b>first post</b> with HTML content.</p>"
         assert post1.security == "public"
@@ -61,7 +61,7 @@ class TestXMLParserPosts:
         # Verify post without subject (empty string should be None)
         post2 = posts[1]
         assert post2.itemid == 117248
-        assert post2.jitemid == 458  # 117248 >> 8
+        assert post2.jitemid == 458
         assert post2.subject is None
         assert post2.security == "private"
         assert post2.current_mood is None
@@ -92,16 +92,16 @@ class TestXMLParserPosts:
 
         post = posts[0]
         assert post.itemid == 116736
-        assert post.jitemid == 456  # 116736 >> 8
+        assert post.jitemid == 456
         assert post.subject == "Simple Post"
 
-    def test_jitemid_calculation(self, sample_posts_xml: str) -> None:
-        """Test that jitemid is calculated correctly."""
+    def test_jitemid_present(self, sample_posts_xml: str) -> None:
+        """Test that jitemid is present in parsed posts."""
         posts = XMLParser.parse_posts(sample_posts_xml)
 
         for post in posts:
-            # Verify jitemid matches itemid >> 8
-            assert post.jitemid == (post.itemid >> 8)
+            # Verify jitemid is set (exact value from XML)
+            assert post.jitemid is not None
 
     def test_cdata_handling(self, sample_posts_xml: str) -> None:
         """Test that CDATA sections are handled correctly."""

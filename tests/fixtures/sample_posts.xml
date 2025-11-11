@@ -2,6 +2,7 @@
 <livejournal>
   <entry>
     <itemid>116992</itemid>
+    <jitemid>457</jitemid>
     <eventtime>2023-01-15 14:30:00</eventtime>
     <logtime>2023-01-15 14:30:00</logtime>
     <subject>First Post Title</subject>
@@ -13,6 +14,7 @@
   </entry>
   <entry>
     <itemid>117248</itemid>
+    <jitemid>458</jitemid>
     <eventtime>2023-01-20 10:15:00</eventtime>
     <logtime>2023-01-20 10:15:00</logtime>
     <subject></subject>
@@ -22,6 +24,7 @@
   </entry>
   <entry>
     <itemid>117504</itemid>
+    <jitemid>459</jitemid>
     <eventtime>2023-01-25 18:45:00</eventtime>
     <logtime>2023-01-25 18:45:00</logtime>
     <subject>Friends-only Post</subject>
@@ -32,6 +35,7 @@
   </entry>
   <entry>
     <itemid>117760</itemid>
+    <jitemid>460</jitemid>
     <eventtime>2023-01-30 22:00:00</eventtime>
     <logtime>2023-01-30 22:00:00</logtime>
     <subject>Custom Security Post</subject>

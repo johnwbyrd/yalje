@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Post(BaseModel):
@@ -10,7 +10,7 @@ class Post(BaseModel):
 
     itemid: int = Field(..., description="Unique post identifier")
     jitemid: Optional[int] = Field(
-        None, description="Calculated: itemid >> 8 (for comment linking)"
+        None, description="Post identifier for comment linking (relationship TBD)"
     )
     eventtime: str = Field(..., description="Publication datetime (YYYY-MM-DD HH:MM:SS)")
     logtime: str = Field(..., description="Log/save datetime (YYYY-MM-DD HH:MM:SS)")
@@ -20,13 +20,6 @@ class Post(BaseModel):
     allowmask: int = Field(0, description="Bitmask for custom friend groups")
     current_mood: Optional[str] = Field(None, description="Mood metadata")
     current_music: Optional[str] = Field(None, description="Music metadata")
-
-    @model_validator(mode="after")
-    def calculate_jitemid(self) -> "Post":
-        """Calculate jitemid from itemid if not provided."""
-        if self.jitemid is None:
-            self.jitemid = self.itemid >> 8
-        return self
 
     @field_validator("security")
     @classmethod

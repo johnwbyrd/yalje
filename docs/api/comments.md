@@ -108,17 +108,7 @@ while startid < maxid:
 
 ## Linking to Posts
 
-Comments reference posts via `jitemid`, calculated from post's `itemid`:
-
-```python
-# Post has itemid
-post_itemid = 116992
-
-# Calculate jitemid
-jitemid = post_itemid >> 8  # = 456
-
-# All comments with jitemid=456 belong to this post
-```
+Comments reference posts via the `jitemid` field. Each comment's `jitemid` should match a post's `jitemid` field. The exact relationship between post `itemid` and `jitemid` is not documented in the official LiveJournal API and will need to be determined through empirical testing with actual LiveJournal data.
 
 ## Comment Threading
 

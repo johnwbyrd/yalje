@@ -115,16 +115,7 @@ Months with no posts will return valid XML with no `<entry>` elements:
 
 ### Post ID and Comment Linking
 
-The `itemid` is used to link posts with comments:
-```python
-# Comments reference posts via jitemid
-# Conversion formula:
-jitemid = itemid >> 8  # Right-shift by 8 bits
-
-# Example:
-# Post itemid = 116992
-# Comment jitemid = 456 (116992 >> 8)
-```
+Posts include both `itemid` and `jitemid` fields. Comments reference posts via the `jitemid` field. The exact relationship between `itemid` and `jitemid` is not documented in the official LiveJournal API documentation and will need to be determined through empirical testing with actual LiveJournal data.
 
 ### Character Encoding
 

@@ -77,9 +77,13 @@ class XMLParser:
                 current_mood = XMLParser._get_text(entry, "current_mood")
                 current_music = XMLParser._get_text(entry, "current_music")
 
-                # Create Post object (Pydantic will calculate jitemid automatically)
+                # Extract jitemid (optional field)
+                jitemid = XMLParser._get_int(entry, "jitemid")
+
+                # Create Post object
                 post = Post(
                     itemid=itemid,
+                    jitemid=jitemid,
                     eventtime=eventtime,
                     logtime=logtime,
                     subject=subject,

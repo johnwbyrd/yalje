@@ -94,7 +94,7 @@ Array of all blog posts.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `itemid` | integer | Yes | Unique post identifier |
-| `jitemid` | integer | Yes | Calculated: `itemid >> 8` |
+| `jitemid` | integer | No | Post identifier for comment linking |
 | `eventtime` | string | Yes | Publication datetime |
 | `logtime` | string | Yes | Log/save datetime |
 | `subject` | string or null | Yes | Post title |
@@ -155,12 +155,12 @@ Array of all inbox messages.
 # Post
 posts:
   - itemid: 116992
-    jitemid: 456  # itemid >> 8
+    jitemid: 456
 
 # Comments for this post
 comments:
   - id: 100
-    jitemid: 456  # Links to post
+    jitemid: 456  # Links to post via jitemid
 ```
 
 ### Comment Threading

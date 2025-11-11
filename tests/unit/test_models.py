@@ -4,9 +4,9 @@ from yalje.models.export import LJExport
 from yalje.models.post import Post
 
 
-def test_post_jitemid_calculation():
-    """Test that jitemid is calculated correctly from itemid."""
-    # Test with explicit jitemid (116736 >> 8 = 456)
+def test_post_jitemid_optional():
+    """Test that jitemid can be set or left as None."""
+    # Test with explicit jitemid
     post = Post(
         itemid=116736,
         jitemid=456,
@@ -17,9 +17,8 @@ def test_post_jitemid_calculation():
         security="public",
     )
     assert post.jitemid == 456
-    assert post.jitemid == (post.itemid >> 8)
 
-    # Test automatic calculation when jitemid not provided
+    # Test with jitemid not provided (should be None)
     post2 = Post(
         itemid=116736,
         eventtime="2023-01-15 14:30:00",
@@ -28,8 +27,7 @@ def test_post_jitemid_calculation():
         event="Content",
         security="public",
     )
-    assert post2.jitemid == 456
-    assert post2.jitemid == (post2.itemid >> 8)
+    assert post2.jitemid is None
 
 
 def test_export_serialization(sample_export):
