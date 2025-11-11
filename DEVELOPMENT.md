@@ -105,7 +105,7 @@ GitHub Actions runs on every push and PR:
 - **Formatting check:** `ruff format --check`
 - **Type checking:** `mypy`
 - **Tests:** `pytest` with coverage
-- **Multiple Python versions:** 3.8, 3.9, 3.10, 3.11, 3.12
+- **Multiple Python versions:** 3.9, 3.10, 3.11, 3.12
 
 **Configuration:** See [.github/workflows/ci.yml](.github/workflows/ci.yml)
 

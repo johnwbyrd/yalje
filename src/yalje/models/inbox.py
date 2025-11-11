@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from yalje.models.user import InboxSender
 
@@ -28,7 +28,5 @@ class InboxMessage(BaseModel):
     read: bool = Field(False, description="Read status")
     bookmarked: bool = Field(False, description="Bookmark status")
 
-    class Config:
-        """Pydantic config."""
-
-        extra = "ignore"
+    # Pydantic v2 configuration
+    model_config = ConfigDict(extra="ignore")

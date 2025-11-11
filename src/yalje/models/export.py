@@ -1,8 +1,8 @@
 """Top-level export model containing all LiveJournal data."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from yalje.models.comment import Comment
 from yalje.models.inbox import InboxMessage
@@ -14,7 +14,7 @@ class ExportMetadata(BaseModel):
     """Metadata about the export operation."""
 
     export_date: str = Field(
-        default_factory=lambda: datetime.utcnow().isoformat() + "Z",
+        default_factory=lambda: datetime.now(UTC).isoformat(),
         description="When export was performed (ISO 8601)",
     )
     lj_user: str = Field(..., description="LiveJournal username")
@@ -105,7 +105,5 @@ class LJExport(BaseModel):
         self.metadata.comment_count = len(self.comments)
         self.metadata.inbox_count = len(self.inbox)
 
-    class Config:
-        """Pydantic config."""
-
-        extra = "ignore"
+    # Pydantic v2 configuration
+    model_config = ConfigDict(extra="ignore")

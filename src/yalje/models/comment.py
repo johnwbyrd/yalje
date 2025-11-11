@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Comment(BaseModel):
@@ -18,7 +18,5 @@ class Comment(BaseModel):
     body: Optional[str] = Field(None, description="Comment content (HTML preserved)")
     state: Optional[str] = Field(None, description="'deleted' or null")
 
-    class Config:
-        """Pydantic config."""
-
-        extra = "ignore"
+    # Pydantic v2 configuration
+    model_config = ConfigDict(extra="ignore")

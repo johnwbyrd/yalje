@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class YaljeConfig(BaseModel):
@@ -48,10 +48,8 @@ class YaljeConfig(BaseModel):
     log_level: str = "INFO"
     log_file: Optional[Path] = None
 
-    class Config:
-        """Pydantic config."""
-
-        arbitrary_types_allowed = True
+    # Pydantic v2 configuration
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def save_to_file(self, path: Path) -> None:
         """Save configuration to a YAML file."""

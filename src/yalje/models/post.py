@@ -2,14 +2,14 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Post(BaseModel):
     """A LiveJournal blog post."""
 
     itemid: int = Field(..., description="Unique post identifier")
-    jitemid: int = Field(..., description="Calculated: itemid >> 8 (for comment linking)")
+    jitemid: Optional[int] = Field(None, description="Calculated: itemid >> 8 (for comment linking)")
     eventtime: str = Field(..., description="Publication datetime (YYYY-MM-DD HH:MM:SS)")
     logtime: str = Field(..., description="Log/save datetime (YYYY-MM-DD HH:MM:SS)")
     subject: Optional[str] = Field(None, description="Post title")
@@ -19,17 +19,12 @@ class Post(BaseModel):
     current_mood: Optional[str] = Field(None, description="Mood metadata")
     current_music: Optional[str] = Field(None, description="Music metadata")
 
-    @field_validator("jitemid", mode="before")
-    @classmethod
-    def calculate_jitemid(cls, v: Optional[int], info) -> int:
+    @model_validator(mode="after")
+    def calculate_jitemid(self) -> "Post":
         """Calculate jitemid from itemid if not provided."""
-        if v is not None:
-            return v
-        # Get itemid from values
-        itemid = info.data.get("itemid")
-        if itemid is None:
-            raise ValueError("itemid must be provided")
-        return itemid >> 8
+        if self.jitemid is None:
+            self.jitemid = self.itemid >> 8
+        return self
 
     @field_validator("security")
     @classmethod
@@ -40,8 +35,7 @@ class Post(BaseModel):
             raise ValueError(f"security must be one of {valid_levels}")
         return v
 
-    class Config:
-        """Pydantic config."""
-
-        # Allow extra fields in case LJ adds more metadata
-        extra = "ignore"
+    # Pydantic v2 configuration
+    model_config = ConfigDict(
+        extra="ignore",  # Allow extra fields in case LJ adds more metadata
+    )
