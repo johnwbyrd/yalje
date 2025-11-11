@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<livejournal>
+  <comment id="100" jitemid="456" posterid="123" parentid="99">
+    <date>2023-01-15 15:45:00</date>
+    <subject>Re: Post Title</subject>
+    <body><![CDATA[<p>This is a <b>comment</b> with HTML.</p>]]></body>
+  </comment>
+  <comment id="101" jitemid="456" posterid="456">
+    <date>2023-01-15 16:00:00</date>
+    <subject>Top-level comment</subject>
+    <body><![CDATA[<p>This is a top-level comment (no parentid).</p>]]></body>
+  </comment>
+  <comment id="102" jitemid="789">
+    <date>2023-01-16 10:00:00</date>
+    <subject>Anonymous comment</subject>
+    <body><![CDATA[<p>Posted anonymously (no posterid).</p>]]></body>
+  </comment>
+  <comment id="103" jitemid="456" posterid="123" parentid="100">
+    <date>2023-01-17 12:30:00</date>
+    <subject></subject>
+    <body><![CDATA[<p>Comment without subject.</p>]]></body>
+  </comment>
+</livejournal>

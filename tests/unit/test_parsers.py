@@ -49,6 +49,27 @@ def sample_comment_meta_empty_xml(fixtures_dir: Path) -> str:
         return f.read()
 
 
+@pytest.fixture
+def sample_comments_xml(fixtures_dir: Path) -> str:
+    """Load sample comments XML."""
+    with open(fixtures_dir / "sample_comments.xml") as f:
+        return f.read()
+
+
+@pytest.fixture
+def sample_comments_empty_xml(fixtures_dir: Path) -> str:
+    """Load empty comments XML."""
+    with open(fixtures_dir / "sample_comments_empty.xml") as f:
+        return f.read()
+
+
+@pytest.fixture
+def sample_comments_edge_cases_xml(fixtures_dir: Path) -> str:
+    """Load edge cases comments XML."""
+    with open(fixtures_dir / "sample_comments_edge_cases.xml") as f:
+        return f.read()
+
+
 class TestXMLParserPosts:
     """Tests for XMLParser.parse_posts()."""
 
@@ -279,3 +300,126 @@ class TestXMLParserCommentMetadata:
         assert usermap[0].username == "valid_user"
         assert usermap[1].userid == 789
         assert usermap[1].username == "another_valid"
+
+
+class TestXMLParserComments:
+    """Tests for XMLParser.parse_comments()."""
+
+    def test_parse_multiple_comments(self, sample_comments_xml: str) -> None:
+        """Test parsing multiple comments from XML."""
+        comments = XMLParser.parse_comments(sample_comments_xml)
+
+        # Should have 4 comments
+        assert len(comments) == 4
+
+        # Verify first comment (threaded, with subject, with body)
+        comment1 = comments[0]
+        assert comment1.id == 100
+        assert comment1.jitemid == 456
+        assert comment1.posterid == 123
+        assert comment1.poster_username is None  # Not resolved yet
+        assert comment1.parentid == 99
+        assert comment1.date == "2023-01-15 15:45:00"
+        assert comment1.subject == "Re: Post Title"
+        assert comment1.body == "<p>This is a <b>comment</b> with HTML.</p>"
+        assert comment1.state is None
+
+        # Verify second comment (top-level, no parentid)
+        comment2 = comments[1]
+        assert comment2.id == 101
+        assert comment2.jitemid == 456
+        assert comment2.posterid == 456
+        assert comment2.parentid is None
+        assert comment2.subject == "Top-level comment"
+
+        # Verify third comment (anonymous, no posterid)
+        comment3 = comments[2]
+        assert comment3.id == 102
+        assert comment3.jitemid == 789
+        assert comment3.posterid is None
+        assert comment3.subject == "Anonymous comment"
+
+        # Verify fourth comment (no subject - empty string becomes None)
+        comment4 = comments[3]
+        assert comment4.id == 103
+        assert comment4.subject is None
+        assert comment4.body == "<p>Comment without subject.</p>"
+
+    def test_parse_empty_xml(self, sample_comments_empty_xml: str) -> None:
+        """Test parsing XML with no comments."""
+        comments = XMLParser.parse_comments(sample_comments_empty_xml)
+        assert len(comments) == 0
+        assert comments == []
+
+    def test_parse_edge_cases(self, sample_comments_edge_cases_xml: str) -> None:
+        """Test parsing edge cases: deleted, no subject element, no body element."""
+        comments = XMLParser.parse_comments(sample_comments_edge_cases_xml)
+
+        assert len(comments) == 3
+
+        # Deleted comment (state="D")
+        deleted = comments[0]
+        assert deleted.id == 200
+        assert deleted.state == "deleted"
+        assert deleted.body is None  # Empty string becomes None
+
+        # Comment without subject element
+        no_subject = comments[1]
+        assert no_subject.id == 201
+        assert no_subject.subject is None
+
+        # Comment without body element
+        no_body = comments[2]
+        assert no_body.id == 202
+        assert no_body.body is None
+
+    def test_parse_invalid_xml(self) -> None:
+        """Test parsing malformed XML raises ParsingError."""
+        invalid_xml = "<livejournal><comment id='100'>Invalid</livejournal>"
+
+        with pytest.raises(ParsingError, match="Failed to parse XML"):
+            XMLParser.parse_comments(invalid_xml)
+
+    def test_parse_missing_required_id(self) -> None:
+        """Test parsing comment without id raises ParsingError."""
+        xml_without_id = """<?xml version="1.0"?>
+<livejournal>
+  <comment jitemid="456">
+    <date>2023-01-15 15:45:00</date>
+  </comment>
+</livejournal>
+"""
+        with pytest.raises(ParsingError, match="Missing required attribute: id"):
+            XMLParser.parse_comments(xml_without_id)
+
+    def test_parse_missing_required_jitemid(self) -> None:
+        """Test parsing comment without jitemid raises ParsingError."""
+        xml_without_jitemid = """<?xml version="1.0"?>
+<livejournal>
+  <comment id="100">
+    <date>2023-01-15 15:45:00</date>
+  </comment>
+</livejournal>
+"""
+        with pytest.raises(ParsingError, match="Missing required attribute: jitemid"):
+            XMLParser.parse_comments(xml_without_jitemid)
+
+    def test_parse_missing_required_date(self) -> None:
+        """Test parsing comment without date raises ParsingError."""
+        xml_without_date = """<?xml version="1.0"?>
+<livejournal>
+  <comment id="100" jitemid="456">
+    <subject>Test</subject>
+  </comment>
+</livejournal>
+"""
+        with pytest.raises(ParsingError, match="Missing required field: date"):
+            XMLParser.parse_comments(xml_without_date)
+
+    def test_cdata_handling(self, sample_comments_xml: str) -> None:
+        """Test that CDATA sections are handled correctly."""
+        comments = XMLParser.parse_comments(sample_comments_xml)
+
+        # Verify HTML content is preserved from CDATA
+        assert "<b>comment</b>" in comments[0].body
+        assert "<p>" in comments[0].body

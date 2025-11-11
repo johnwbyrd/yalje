@@ -188,14 +188,84 @@ class XMLParser:
         Raises:
             ParsingError: If XML parsing fails
         """
-        # TODO: Implement
-        # 1. Parse XML with lxml
-        # 2. Find all <comment> elements
-        # 3. Extract attributes (id, jitemid, posterid, parentid, state)
-        # 4. Extract child elements (date, subject, body)
-        # 5. Handle CDATA sections in <body>
-        # 6. Convert to Comment objects
-        raise NotImplementedError("XMLParser.parse_comments not yet implemented")
+        from yalje.core.exceptions import ParsingError
+
+        logger.debug("Parsing comments from XML")
+
+        try:
+            # Parse XML string
+            root = ET.fromstring(xml_string)
+        except ET.ParseError as e:
+            logger.error(f"XML parsing failed: {e}")
+            raise ParsingError(f"Failed to parse XML: {e}") from e
+
+        comments = []
+
+        # Find all <comment> elements
+        for comment_elem in root.findall("comment"):
+            try:
+                # Extract required attributes
+                comment_id_str = comment_elem.get("id")
+                if comment_id_str is None:
+                    raise ParsingError("Missing required attribute: id")
+
+                jitemid_str = comment_elem.get("jitemid")
+                if jitemid_str is None:
+                    raise ParsingError("Missing required attribute: jitemid")
+
+                # Convert required attributes to int
+                comment_id = int(comment_id_str)
+                jitemid = int(jitemid_str)
+
+                # Extract optional attributes
+                posterid_str = comment_elem.get("posterid")
+                posterid = int(posterid_str) if posterid_str is not None else None
+
+                parentid_str = comment_elem.get("parentid")
+                parentid = int(parentid_str) if parentid_str is not None else None
+
+                state_str = comment_elem.get("state")
+                # Convert state "D" to "deleted", None to None
+                state = "deleted" if state_str == "D" else None
+
+                # Extract required child element: date
+                date = XMLParser._get_text(comment_elem, "date")
+                if date is None:
+                    raise ParsingError(f"Missing required field: date for comment id {comment_id}")
+
+                # Extract optional child elements
+                subject = XMLParser._get_text(comment_elem, "subject")
+                # Convert empty string to None for subject
+                if subject == "":
+                    subject = None
+
+                body = XMLParser._get_text(comment_elem, "body")
+                # Convert empty string to None for body
+                if body == "":
+                    body = None
+
+                # Create Comment object (poster_username is None, will be resolved later)
+                comment = Comment(
+                    id=comment_id,
+                    jitemid=jitemid,
+                    posterid=posterid,
+                    poster_username=None,
+                    parentid=parentid,
+                    date=date,
+                    subject=subject,
+                    body=body,
+                    state=state,
+                )
+                comments.append(comment)
+
+            except Exception as e:
+                if isinstance(e, ParsingError):
+                    raise
+                logger.error(f"Failed to parse comment element: {e}")
+                raise ParsingError(f"Failed to parse comment element: {e}") from e
+
+        logger.debug(f"  → Parsed {len(comments)} comments from XML")
+        return comments
 
     @staticmethod
     def _get_text(element: ET.Element, tag: str) -> Optional[str]:

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<livejournal>
+  <comment id="200" jitemid="456" posterid="123" state="D">
+    <date>2023-01-15 14:00:00</date>
+    <subject>Deleted comment</subject>
+    <body></body>
+  </comment>
+  <comment id="201" jitemid="456" posterid="789" parentid="200">
+    <date>2023-01-15 14:30:00</date>
+    <body><![CDATA[<p>Comment without subject element.</p>]]></body>
+  </comment>
+  <comment id="202" jitemid="456">
+    <date>2023-01-15 15:00:00</date>
+    <subject>Anonymous with no body</subject>
+  </comment>
+</livejournal>
