@@ -1,6 +1,6 @@
 """Top-level export model containing all LiveJournal data."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -14,7 +14,7 @@ class ExportMetadata(BaseModel):
     """Metadata about the export operation."""
 
     export_date: str = Field(
-        default_factory=lambda: datetime.now(UTC).isoformat(),
+        default_factory=lambda: datetime.now(timezone.utc).isoformat(),
         description="When export was performed (ISO 8601)",
     )
     lj_user: str = Field(..., description="LiveJournal username")

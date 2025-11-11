@@ -9,7 +9,9 @@ class Post(BaseModel):
     """A LiveJournal blog post."""
 
     itemid: int = Field(..., description="Unique post identifier")
-    jitemid: Optional[int] = Field(None, description="Calculated: itemid >> 8 (for comment linking)")
+    jitemid: Optional[int] = Field(
+        None, description="Calculated: itemid >> 8 (for comment linking)"
+    )
     eventtime: str = Field(..., description="Publication datetime (YYYY-MM-DD HH:MM:SS)")
     logtime: str = Field(..., description="Log/save datetime (YYYY-MM-DD HH:MM:SS)")
     subject: Optional[str] = Field(None, description="Post title")

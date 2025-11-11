@@ -68,7 +68,54 @@ pre-commit run --all-files
 
 ## Testing
 
-### Run Tests
+### Tox - Run All Quality Checks (Recommended)
+
+Tox runs all quality checks in isolated environments, matching CI exactly:
+
+```bash
+# Run EVERYTHING (all Python versions + lint + typecheck)
+tox
+
+# Fast: Run checks on current Python only (recommended during development)
+tox -e dev
+
+# Run all checks once (lint + typecheck + tests on current Python)
+tox -e all
+
+# Run specific test environments
+tox -e lint          # Linting checks only
+tox -e typecheck     # Type checking only
+tox -e py312         # Tests on Python 3.12 only
+
+# Run multiple specific environments
+tox -e lint,typecheck,py312
+
+# UTILITY: Auto-format code (not a test, manual use only)
+tox -e format        # Fix formatting issues
+
+# Pass arguments to pytest
+tox -e py312 -- -v tests/unit/
+
+# List all available environments
+tox -l
+```
+
+**Why use tox?**
+- ✅ One command runs all checks (ruff + mypy + pytest)
+- ✅ Tests in isolated environments (catches missing dependencies)
+- ✅ Tests across multiple Python versions locally
+- ✅ Matches CI workflow exactly
+
+**Quick reference:**
+- Development: `tox -e dev` (fastest, runs everything once)
+- Before commit: `tox -e all` (lint + typecheck + test)
+- Full CI check: `tox` (all Python versions)
+
+**Configuration:** See [tox.ini](tox.ini)
+
+### Run Tests Directly (pytest)
+
+For quick iteration without tox:
 
 ```bash
 # Run all tests
@@ -91,6 +138,8 @@ pytest -v
 ```bash
 # Generate HTML coverage report
 pytest --cov=yalje --cov-report=html
+# Or use tox
+tox -e all  # Generates htmlcov/
 
 # View report
 open htmlcov/index.html  # macOS
@@ -99,15 +148,18 @@ xdg-open htmlcov/index.html  # Linux
 
 ## Continuous Integration
 
-GitHub Actions runs on every push and PR:
+GitHub Actions runs on every push and PR using tox:
 
-- **Linting:** `ruff check`
-- **Formatting check:** `ruff format --check`
-- **Type checking:** `mypy`
-- **Tests:** `pytest` with coverage
-- **Multiple Python versions:** 3.9, 3.10, 3.11, 3.12
+- **Tests:** `tox -e py{39,310,311,312}` - Run pytest on Python 3.9, 3.10, 3.11, 3.12
+- **Linting:** `tox -e lint` - Ruff linter and formatter checks
+- **Type checking:** `tox -e typecheck` - Mypy type checking
 
-**Configuration:** See [.github/workflows/ci.yml](.github/workflows/ci.yml)
+**Benefits:**
+- ✅ CI uses the exact same commands as local development
+- ✅ Isolated environments prevent dependency issues
+- ✅ Easy to debug CI failures locally: just run `tox -e py311`
+
+**Configuration:** See [.github/workflows/ci.yml](.github/workflows/ci.yml) and [tox.ini](tox.ini)
 
 ## Development Workflow
 
@@ -123,14 +175,13 @@ GitHub Actions runs on every push and PR:
 
 3. **Run checks locally**
    ```bash
-   # Format and fix issues
+   # Option 1: Use tox (recommended - runs all checks)
+   tox -e dev
+
+   # Option 2: Run commands individually
    ruff check --fix src/ tests/
    ruff format src/ tests/
-
-   # Type check
    mypy src/yalje
-
-   # Run tests
    pytest
    ```
 
@@ -152,11 +203,21 @@ GitHub Actions runs on every push and PR:
 ## Common Commands
 
 ```bash
-# Full quality check
-ruff check src/ tests/ && ruff format --check src/ tests/ && mypy src/yalje && pytest
+# Full quality check (recommended)
+tox -e dev
+
+# Run all checks across all Python versions (like CI)
+tox
 
 # Quick format + fix
+tox -e format
+# Or manually:
 ruff check --fix src/ tests/ && ruff format src/ tests/
+
+# Individual checks
+tox -e lint        # Linting only
+tox -e typecheck   # Type checking only
+tox -e py312       # Tests only
 
 # Update dependencies
 pip install -U -e ".[dev]"

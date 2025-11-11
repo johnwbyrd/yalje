@@ -7,9 +7,11 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
+  tests:
+    name: Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
@@ -21,27 +23,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install dependencies
+      - name: Install tox
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install tox
 
-      - name: Run ruff linter
+      - name: Run tests with tox
         run: |
-          ruff check src/ tests/
-
-      - name: Run ruff formatter check
-        run: |
-          ruff format --check src/ tests/
-
-      - name: Run type checker (mypy)
-        run: |
-          mypy src/yalje
-        continue-on-error: true  # Don't fail CI on mypy errors initially
-
-      - name: Run tests with coverage
-        run: |
-          pytest --cov=yalje --cov-report=xml --cov-report=term-missing
+          tox -e py$(echo ${{ matrix.python-version }} | tr -d .)
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -51,6 +40,7 @@ jobs:
           fail_ci_if_error: false
 
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -60,15 +50,30 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install tox
         run: |
           python -m pip install --upgrade pip
-          pip install ruff
+          pip install tox
 
-      - name: Run ruff linter
-        run: |
-          ruff check --output-format=github src/ tests/
+      - name: Run linting checks
+        run: tox -e lint
 
-      - name: Run ruff formatter check
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tox
         run: |
-          ruff format --check src/ tests/
+          python -m pip install --upgrade pip
+          pip install tox
+
+      - name: Run type checking
+        run: tox -e typecheck
+        continue-on-error: true  # Don't fail CI on mypy errors initially
