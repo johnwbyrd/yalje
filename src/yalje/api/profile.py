@@ -15,28 +15,86 @@ logger = get_logger("api.profile")
 # Supports English, Russian, German, French, Spanish, and more
 MONTH_NAMES = {
     # English
-    "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
-    "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12,
-    "jan": 1, "feb": 2, "mar": 3, "apr": 4, "jun": 6, "jul": 7,
-    "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
-
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
     # Russian
-    "января": 1, "февраля": 2, "марта": 3, "апреля": 4, "мая": 5, "июня": 6,
-    "июля": 7, "августа": 8, "сентября": 9, "октября": 10, "ноября": 11, "декабря": 12,
-    "янв": 1, "фев": 2, "мар": 3, "апр": 4, "июн": 6, "июл": 7,
-    "авг": 8, "сен": 9, "окт": 10, "ноя": 11, "дек": 12,
-
-    # German
-    "januar": 1, "februar": 2, "märz": 3, "april": 4, "mai": 5, "juni": 6,
-    "juli": 7, "august": 8, "september": 9, "oktober": 10, "november": 11, "dezember": 12,
-
+    "января": 1,
+    "февраля": 2,
+    "марта": 3,
+    "апреля": 4,
+    "мая": 5,
+    "июня": 6,
+    "июля": 7,
+    "августа": 8,
+    "сентября": 9,
+    "октября": 10,
+    "ноября": 11,
+    "декабря": 12,
+    "янв": 1,
+    "фев": 2,
+    "мар": 3,
+    "апр": 4,
+    "июн": 6,
+    "июл": 7,
+    "авг": 8,
+    "сен": 9,
+    "окт": 10,
+    "ноя": 11,
+    "дек": 12,
+    # German (only unique month names not already in English)
+    "januar": 1,
+    "februar": 2,
+    "märz": 3,
+    "juni": 6,
+    "juli": 7,
+    "oktober": 10,
+    "dezember": 12,
     # French
-    "janvier": 1, "février": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
-    "juillet": 7, "août": 8, "septembre": 9, "octobre": 10, "novembre": 11, "décembre": 12,
-
+    "janvier": 1,
+    "février": 2,
+    "mars": 3,
+    "avril": 4,
+    "juin": 6,
+    "juillet": 7,
+    "août": 8,
+    "septembre": 9,
+    "octobre": 10,
+    "novembre": 11,
+    "décembre": 12,
     # Spanish
-    "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
-    "julio": 7, "agosto": 8, "septiembre": 9, "octubre": 10, "noviembre": 11, "diciembre": 12,
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
 }
 
 
@@ -114,8 +172,7 @@ class ProfileParser:
         updated_year, updated_month = ProfileParser._extract_update_date(html)
 
         logger.debug(
-            f"Parsed profile: {post_count} posts, "
-            f"created {created_year}-{created_month:02d}"
+            f"Parsed profile: {post_count} posts, created {created_year}-{created_month:02d}"
         )
 
         return ProfileData(
@@ -238,7 +295,7 @@ class ProfileParser:
             return (year_int, month_num)
 
         except (ValueError, AttributeError) as e:
-            raise ParsingError(f"Failed to parse journal creation date: {e}")
+            raise ParsingError(f"Failed to parse journal creation date: {e}") from e
 
     @staticmethod
     def _extract_update_date(html_content: str) -> tuple[Optional[int], Optional[int]]:
@@ -262,7 +319,7 @@ class ProfileParser:
             # Find update date in tooltip
             match = re.search(
                 r'<span class="tooltip"[^>]*>(\d+)\s+([а-яА-ЯёЁa-zA-Zäöüß]+)\s+(\d{4})</span>',
-                decoded_html
+                decoded_html,
             )
             if match:
                 _day, month_name, year = match.groups()

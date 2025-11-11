@@ -154,7 +154,7 @@ See [docs/schema.md](docs/schema.md) for complete format specification.
 
 ## Requirements
 
-- Python 3.9+
+- Python 3.10+
 - Active LiveJournal account
 
 ## Development

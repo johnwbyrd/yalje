@@ -1,7 +1,7 @@
 """Configuration management for yalje."""
 
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -41,7 +41,7 @@ class YaljeConfig(BaseSettings):
     export_posts: bool = True
     export_comments: bool = True
     export_inbox: bool = True
-    inbox_folders: list[str] = Field(
+    inbox_folders: List[str] = Field(
         default_factory=lambda: ["all"]  # Default to 'all' folder
     )
 

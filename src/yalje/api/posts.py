@@ -145,6 +145,10 @@ class PostsClient(BaseAPIClient):
             )
             logger.info(f"Auto-discovered range: expecting {expected_count} posts")
 
+        # Type narrowing: after auto-discovery, these values are guaranteed to be int
+        assert start_year is not None and start_month is not None
+        assert end_year is not None and end_month is not None
+
         all_posts = []
 
         for year, month in self._generate_month_range(start_year, start_month, end_year, end_month):

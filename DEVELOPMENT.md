@@ -150,7 +150,7 @@ xdg-open htmlcov/index.html  # Linux
 
 GitHub Actions runs on every push and PR using tox:
 
-- **Tests:** `tox -e py{39,310,311,312}` - Run pytest on Python 3.9, 3.10, 3.11, 3.12
+- **Tests:** `tox -e py{310,311,312}` - Run pytest on Python 3.10, 3.11, 3.12
 - **Linting:** `tox -e lint` - Ruff linter and formatter checks
 - **Type checking:** `tox -e typecheck` - Mypy type checking
 
