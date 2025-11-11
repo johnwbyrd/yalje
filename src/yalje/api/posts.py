@@ -64,9 +64,7 @@ class PostsClient(BaseAPIClient):
         """
         all_posts = []
 
-        for year, month in self._generate_month_range(
-            start_year, start_month, end_year, end_month
-        ):
+        for year, month in self._generate_month_range(start_year, start_month, end_year, end_month):
             posts = self.download_month(year, month)
             all_posts.extend(posts)
 

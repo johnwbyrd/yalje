@@ -78,20 +78,15 @@ def _validate_comments(
         # Validate jitemid links to a post
         if comment.jitemid not in post_jitemids:
             errors.append(
-                f"Comment {comment.id}: jitemid {comment.jitemid} "
-                "does not match any post"
+                f"Comment {comment.id}: jitemid {comment.jitemid} does not match any post"
             )
 
         # Validate parentid exists
         if comment.parentid is not None and comment.parentid not in comment_ids:
-            errors.append(
-                f"Comment {comment.id}: parentid {comment.parentid} does not exist"
-            )
+            errors.append(f"Comment {comment.id}: parentid {comment.parentid} does not exist")
 
         # Validate posterid in usermap
         if comment.posterid is not None and comment.posterid not in user_ids:
-            errors.append(
-                f"Comment {comment.id}: posterid {comment.posterid} not in usermap"
-            )
+            errors.append(f"Comment {comment.id}: posterid {comment.posterid} not in usermap")
 
     return errors

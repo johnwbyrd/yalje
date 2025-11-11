@@ -33,14 +33,10 @@ class LJExport(BaseModel):
     """
 
     metadata: ExportMetadata = Field(..., description="Export metadata")
-    usermap: list[User] = Field(
-        default_factory=list, description="User ID to username mappings"
-    )
+    usermap: list[User] = Field(default_factory=list, description="User ID to username mappings")
     posts: list[Post] = Field(default_factory=list, description="All blog posts")
     comments: list[Comment] = Field(default_factory=list, description="All comments")
-    inbox: list[InboxMessage] = Field(
-        default_factory=list, description="All inbox messages"
-    )
+    inbox: list[InboxMessage] = Field(default_factory=list, description="All inbox messages")
 
     def to_yaml(self) -> str:
         """

@@ -67,17 +67,13 @@ class Authenticator:
 
         # Step 3: Extract session cookies
         try:
-            ljloggedin = self._extract_cookie_from_response(
-                response.headers, "ljloggedin"
-            )
+            ljloggedin = self._extract_cookie_from_response(response.headers, "ljloggedin")
             ljmastersession = self._extract_cookie_from_response(
                 response.headers, "ljmastersession"
             )
 
             if not ljloggedin or not ljmastersession:
-                raise AuthenticationError(
-                    "Failed to acquire session cookies. Check credentials."
-                )
+                raise AuthenticationError("Failed to acquire session cookies. Check credentials.")
 
             session.set_cookies(
                 {
@@ -91,9 +87,7 @@ class Authenticator:
         self.session = session
         return session
 
-    def _extract_cookie_from_response(
-        self, headers: dict, cookie_name: str
-    ) -> Optional[str]:
+    def _extract_cookie_from_response(self, headers: dict, cookie_name: str) -> Optional[str]:
         """Extract cookie value from Set-Cookie headers.
 
         Args:

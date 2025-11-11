@@ -52,9 +52,7 @@ class HTMLParser:
         # 6. Extract timestamp from time cell
         # 7. Determine read/unread status
         # 8. Determine bookmarked status
-        raise NotImplementedError(
-            "HTMLParser._extract_message_from_row not yet implemented"
-        )
+        raise NotImplementedError("HTMLParser._extract_message_from_row not yet implemented")
 
     @staticmethod
     def _extract_sender(row: etree._Element) -> Optional[InboxSender]:

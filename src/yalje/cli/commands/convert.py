@@ -27,6 +27,5 @@ def convert(input_file: Path, format: str, output: Path) -> None:
     # 3. Export using target format
     # 4. Write to output file
     click.echo(
-        f"Convert command not yet implemented. "
-        f"Would convert {input_file} to {format} format"
+        f"Convert command not yet implemented. Would convert {input_file} to {format} format"
     )

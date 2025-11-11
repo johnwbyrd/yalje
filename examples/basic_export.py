@@ -28,16 +28,8 @@ def main():
     comments, usermap = comments_client.download_all()
 
     # Create export object
-    metadata = ExportMetadata(
-        lj_user=config.username,
-        yalje_version="0.1.0"
-    )
-    export = LJExport(
-        metadata=metadata,
-        posts=posts,
-        comments=comments,
-        usermap=usermap
-    )
+    metadata = ExportMetadata(lj_user=config.username, yalje_version="0.1.0")
+    export = LJExport(metadata=metadata, posts=posts, comments=comments, usermap=usermap)
 
     # Export to YAML
     exporter = YAMLExporter()
@@ -46,6 +38,7 @@ def main():
     print("Export complete! Saved to lj-backup.yaml")
     print(f"  Posts: {len(posts)}")
     print(f"  Comments: {len(comments)}")
+
 
 if __name__ == "__main__":
     main()
