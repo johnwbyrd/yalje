@@ -25,18 +25,40 @@ pip install -e ".[dev]"
 
 ## Quick Start
 
+### Using .env File (Recommended)
+
+Create a `.env` file with your credentials:
+
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Edit .env and add your credentials
+# YALJE_USERNAME=your_username
+# YALJE_PASSWORD=your_password
+```
+
+Then run yalje (it will automatically load from `.env`):
+
 ```bash
 # Download everything to a single YAML file
-yalje download --username your_username --output lj-backup.yaml
+yalje download --output lj-backup.yaml
 
 # Or specify date range for posts
-yalje download --username your_username \
+yalje download \
     --start-year 2020 --start-month 1 \
     --end-year 2023 --end-month 12 \
     --output lj-backup.yaml
 
 # Skip certain content types
-yalje download --username your_username --no-inbox --output lj-backup.yaml
+yalje download --no-inbox --output lj-backup.yaml
+```
+
+### Using Command-Line Arguments
+
+```bash
+# Provide credentials directly (less secure)
+yalje download --username your_username --password your_password --output lj-backup.yaml
 ```
 
 ## Usage as Library

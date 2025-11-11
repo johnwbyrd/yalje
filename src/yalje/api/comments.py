@@ -5,6 +5,9 @@ from yalje.core.config import YaljeConfig
 from yalje.core.session import HTTPSession
 from yalje.models.comment import Comment
 from yalje.models.user import User
+from yalje.utils.logging import get_logger
+
+logger = get_logger("api.comments")
 
 
 class CommentsClient(BaseAPIClient):
@@ -30,11 +33,24 @@ class CommentsClient(BaseAPIClient):
         Raises:
             APIError: If download fails
         """
-        # TODO: Implement
-        # 1. GET export_comments.bml?get=comment_meta&startid=0
-        # 2. Parse XML response
-        # 3. Extract maxid and usermap
-        raise NotImplementedError("CommentsClient.download_metadata not yet implemented")
+        from yalje.parsers.xml_parser import XMLParser
+
+        logger.info("Downloading comment metadata")
+
+        # Build URL
+        url = self._build_url("/export_comments.bml")
+
+        # Add query parameters
+        params = {"get": "comment_meta", "startid": "0"}
+
+        # Make GET request
+        response = self.session.get(url, params=params)
+
+        # Parse XML response
+        maxid, usermap = XMLParser.parse_comment_metadata(response.text)
+
+        logger.info(f"  → Downloaded metadata: maxid={maxid}, {len(usermap)} users in usermap")
+        return (maxid, usermap)
 
     def download_all(self) -> tuple[list[Comment], list[User]]:
         """Download all comments with usermap.
@@ -81,11 +97,24 @@ class CommentsClient(BaseAPIClient):
         Raises:
             APIError: If download fails
         """
-        # TODO: Implement
-        # 1. GET export_comments.bml?get=comment_body&startid={startid}
-        # 2. Parse XML response
-        # 3. Convert to Comment objects
-        raise NotImplementedError("CommentsClient.download_batch not yet implemented")
+        from yalje.parsers.xml_parser import XMLParser
+
+        logger.info(f"Downloading comments batch starting from ID {startid}")
+
+        # Build URL
+        url = self._build_url("/export_comments.bml")
+
+        # Add query parameters
+        params = {"get": "comment_body", "startid": str(startid)}
+
+        # Make GET request
+        response = self.session.get(url, params=params)
+
+        # Parse XML response
+        comments = XMLParser.parse_comments(response.text)
+
+        logger.info(f"  → Downloaded {len(comments)} comments in batch")
+        return comments
 
     def _resolve_usernames(self, comments: list[Comment], usermap: list[User]) -> None:
         """Resolve poster_username for comments using usermap.

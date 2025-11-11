@@ -3,11 +3,18 @@
 from pathlib import Path
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class YaljeConfig(BaseModel):
-    """Configuration for yalje operations."""
+class YaljeConfig(BaseSettings):
+    """Configuration for yalje operations.
+
+    Can be loaded from:
+    - .env file (with YALJE_ prefix)
+    - Environment variables (with YALJE_ prefix)
+    - Direct instantiation with keyword arguments
+    """
 
     # Authentication
     username: Optional[str] = None
@@ -49,7 +56,13 @@ class YaljeConfig(BaseModel):
     log_file: Optional[Path] = None
 
     # Pydantic v2 configuration
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = SettingsConfigDict(
+        env_prefix="YALJE_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        arbitrary_types_allowed=True,
+        case_sensitive=False,
+    )
 
     def save_to_file(self, path: Path) -> None:
         """Save configuration to a YAML file."""
