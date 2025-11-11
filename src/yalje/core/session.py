@@ -8,6 +8,9 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from yalje.core.config import YaljeConfig
 from yalje.core.exceptions import APIError
+from yalje.utils.logging import get_logger
+
+logger = get_logger("session")
 
 
 class HTTPSession:
@@ -28,7 +31,9 @@ class HTTPSession:
         """Apply rate limiting between requests."""
         elapsed = time.time() - self._last_request_time
         if elapsed < self.config.request_delay:
-            time.sleep(self.config.request_delay - elapsed)
+            delay = self.config.request_delay - elapsed
+            logger.debug(f"Rate limiting: sleeping for {delay:.2f}s")
+            time.sleep(delay)
         self._last_request_time = time.time()
 
     @retry(
@@ -57,6 +62,10 @@ class HTTPSession:
         """
         self._rate_limit()
 
+        logger.debug(f"GET {url}")
+        if params:
+            logger.debug(f"  params: {params}")
+
         try:
             response = self.session.get(
                 url,
@@ -65,8 +74,10 @@ class HTTPSession:
                 **kwargs,
             )
             response.raise_for_status()
+            logger.debug(f"  → {response.status_code} OK ({len(response.content)} bytes)")
             return response
         except requests.RequestException as e:
+            logger.error(f"GET request failed: {url} - {e}")
             raise APIError(f"GET request failed: {url}") from e
 
     @retry(
@@ -95,6 +106,11 @@ class HTTPSession:
         """
         self._rate_limit()
 
+        logger.debug(f"POST {url}")
+        if data:
+            # Log data keys but not values (could contain sensitive info)
+            logger.debug(f"  data keys: {list(data.keys())}")
+
         try:
             response = self.session.post(
                 url,
@@ -103,8 +119,10 @@ class HTTPSession:
                 **kwargs,
             )
             response.raise_for_status()
+            logger.debug(f"  → {response.status_code} OK ({len(response.content)} bytes)")
             return response
         except requests.RequestException as e:
+            logger.error(f"POST request failed: {url} - {e}")
             raise APIError(f"POST request failed: {url}") from e
 
     def set_cookies(self, cookies: dict[str, str]) -> None:

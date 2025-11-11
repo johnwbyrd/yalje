@@ -6,6 +6,9 @@ from xml.etree import ElementTree as ET
 from yalje.models.comment import Comment
 from yalje.models.post import Post
 from yalje.models.user import User
+from yalje.utils.logging import get_logger
+
+logger = get_logger("parsers.xml")
 
 
 class XMLParser:
@@ -26,10 +29,13 @@ class XMLParser:
         """
         from yalje.core.exceptions import ParsingError
 
+        logger.debug("Parsing posts from XML")
+
         try:
             # Parse XML string
             root = ET.fromstring(xml_string)
         except ET.ParseError as e:
+            logger.error(f"XML parsing failed: {e}")
             raise ParsingError(f"Failed to parse XML: {e}") from e
 
         posts = []
@@ -88,8 +94,10 @@ class XMLParser:
             except Exception as e:
                 if isinstance(e, ParsingError):
                     raise
+                logger.error(f"Failed to parse entry: {e}")
                 raise ParsingError(f"Failed to parse entry: {e}") from e
 
+        logger.debug(f"  → Parsed {len(posts)} posts from XML")
         return posts
 
     @staticmethod

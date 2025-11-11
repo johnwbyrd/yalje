@@ -7,6 +7,9 @@ from yalje.api.base import BaseAPIClient
 from yalje.core.config import YaljeConfig
 from yalje.core.session import HTTPSession
 from yalje.models.post import Post
+from yalje.utils.logging import get_logger
+
+logger = get_logger("api.posts")
 
 
 class PostsClient(BaseAPIClient):
@@ -35,6 +38,8 @@ class PostsClient(BaseAPIClient):
             APIError: If download fails
         """
         from yalje.parsers.xml_parser import XMLParser
+
+        logger.info(f"Downloading posts for {year}-{month:02d}")
 
         # Build request parameters
         data = {
@@ -67,6 +72,7 @@ class PostsClient(BaseAPIClient):
         # Parse XML response
         posts = XMLParser.parse_posts(response.text)
 
+        logger.info(f"  → Downloaded {len(posts)} posts for {year}-{month:02d}")
         return posts
 
     def download_all(

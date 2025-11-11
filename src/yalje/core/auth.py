@@ -8,6 +8,9 @@ from requests.structures import CaseInsensitiveDict
 from yalje.core.config import YaljeConfig
 from yalje.core.exceptions import AuthenticationError
 from yalje.core.session import HTTPSession
+from yalje.utils.logging import get_logger
+
+logger = get_logger("auth")
 
 
 class Authenticator:
@@ -40,19 +43,24 @@ class Authenticator:
         Raises:
             AuthenticationError: If authentication fails at any step
         """
+        logger.info(f"Authenticating user: {username}")
         session = HTTPSession(self.config)
 
-        # Step 1: Acquire luid cookie
+        # Acquire luid cookie
+        logger.debug("Acquiring luid cookie")
         try:
             response = session.get(f"{self.config.base_url}/")
             luid = self._extract_cookie_from_response(response.headers, "luid")
             if not luid:
                 raise AuthenticationError("Failed to acquire luid cookie")
             session.set_cookies({"luid": luid})
+            logger.debug("luid cookie acquired")
         except Exception as e:
+            logger.error(f"Failed to acquire luid cookie: {e}")
             raise AuthenticationError(f"Failed to acquire luid cookie: {e}") from e
 
-        # Step 2: Login with credentials
+        # Login with credentials
+        logger.debug("Logging in with credentials")
         login_data = {
             "user": username,
             "password": password,
@@ -64,10 +72,13 @@ class Authenticator:
                 data=login_data,
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
             )
+            logger.debug("Login request successful")
         except Exception as e:
+            logger.error(f"Login request failed: {e}")
             raise AuthenticationError(f"Login request failed: {e}") from e
 
-        # Step 3: Extract session cookies
+        # Extract session cookies
+        logger.debug("Extracting session cookies")
         try:
             ljloggedin = self._extract_cookie_from_response(response.headers, "ljloggedin")
             ljmastersession = self._extract_cookie_from_response(
@@ -75,6 +86,7 @@ class Authenticator:
             )
 
             if not ljloggedin or not ljmastersession:
+                logger.error("Session cookies not found in response - invalid credentials?")
                 raise AuthenticationError("Failed to acquire session cookies. Check credentials.")
 
             session.set_cookies(
@@ -83,10 +95,13 @@ class Authenticator:
                     "ljmastersession": ljmastersession,
                 }
             )
+            logger.debug("Session cookies acquired")
         except Exception as e:
+            logger.error(f"Failed to extract session cookies: {e}")
             raise AuthenticationError(f"Failed to extract session cookies: {e}") from e
 
         self.session = session
+        logger.info(f"Authentication successful for user: {username}")
         return session
 
     def _extract_cookie_from_response(
