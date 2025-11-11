@@ -1,7 +1,9 @@
 """Authentication management for LiveJournal."""
 
 import re
-from typing import Optional
+from typing import Optional, Union
+
+from requests.structures import CaseInsensitiveDict
 
 from yalje.core.config import YaljeConfig
 from yalje.core.exceptions import AuthenticationError
@@ -87,7 +89,9 @@ class Authenticator:
         self.session = session
         return session
 
-    def _extract_cookie_from_response(self, headers: dict, cookie_name: str) -> Optional[str]:
+    def _extract_cookie_from_response(
+        self, headers: Union[dict[str, str], CaseInsensitiveDict[str]], cookie_name: str
+    ) -> Optional[str]:
         """Extract cookie value from Set-Cookie headers.
 
         Args:

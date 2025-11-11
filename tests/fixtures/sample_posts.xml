@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<livejournal>
+  <entry>
+    <itemid>116992</itemid>
+    <eventtime>2023-01-15 14:30:00</eventtime>
+    <logtime>2023-01-15 14:30:00</logtime>
+    <subject>First Post Title</subject>
+    <event><![CDATA[<p>This is the <b>first post</b> with HTML content.</p>]]></event>
+    <security>public</security>
+    <allowmask>0</allowmask>
+    <current_mood>happy</current_mood>
+    <current_music>Artist - Song Title</current_music>
+  </entry>
+  <entry>
+    <itemid>117248</itemid>
+    <eventtime>2023-01-20 10:15:00</eventtime>
+    <logtime>2023-01-20 10:15:00</logtime>
+    <subject></subject>
+    <event><![CDATA[<p>Post without a subject, but with content.</p>]]></event>
+    <security>private</security>
+    <allowmask>0</allowmask>
+  </entry>
+  <entry>
+    <itemid>117504</itemid>
+    <eventtime>2023-01-25 18:45:00</eventtime>
+    <logtime>2023-01-25 18:45:00</logtime>
+    <subject>Friends-only Post</subject>
+    <event><![CDATA[<p>This post is visible to friends only.</p><p>Multiple paragraphs!</p>]]></event>
+    <security>friends</security>
+    <allowmask>0</allowmask>
+    <current_mood>contemplative</current_mood>
+  </entry>
+  <entry>
+    <itemid>117760</itemid>
+    <eventtime>2023-01-30 22:00:00</eventtime>
+    <logtime>2023-01-30 22:00:00</logtime>
+    <subject>Custom Security Post</subject>
+    <event><![CDATA[<p>This post has custom friend group security.</p>]]></event>
+    <security>custom</security>
+    <allowmask>42</allowmask>
+  </entry>
+</livejournal>

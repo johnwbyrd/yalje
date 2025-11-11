@@ -34,12 +34,40 @@ class PostsClient(BaseAPIClient):
         Raises:
             APIError: If download fails
         """
-        # TODO: Implement
-        # 1. Build request parameters
-        # 2. POST to export_do.bml
-        # 3. Parse XML response
-        # 4. Convert to Post objects
-        raise NotImplementedError("PostsClient.download_month not yet implemented")
+        from yalje.parsers.xml_parser import XMLParser
+
+        # Build request parameters
+        data = {
+            "what": "journal",
+            "year": str(year),
+            "month": f"{month:02d}",  # Zero-padded month
+            "format": "xml",
+            "header": "on",
+            "encid": "2",  # UTF-8 encoding
+            "field_itemid": "on",
+            "field_eventtime": "on",
+            "field_logtime": "on",
+            "field_subject": "on",
+            "field_event": "on",
+            "field_security": "on",
+            "field_allowmask": "on",
+            "field_currents": "on",
+        }
+
+        # Build URL
+        url = self._build_url("/export_do.bml")
+
+        # Make POST request
+        response = self.session.post(
+            url,
+            data=data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        # Parse XML response
+        posts = XMLParser.parse_posts(response.text)
+
+        return posts
 
     def download_all(
         self,

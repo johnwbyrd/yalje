@@ -1,5 +1,7 @@
 """API client (HTML scraper) for downloading LiveJournal inbox messages."""
 
+from typing import Optional
+
 from yalje.api.base import BaseAPIClient
 from yalje.core.config import YaljeConfig
 from yalje.core.session import HTTPSession
@@ -67,7 +69,7 @@ class InboxClient(BaseAPIClient):
         # 5. Convert to InboxMessage objects
         raise NotImplementedError("InboxClient.download_page not yet implemented")
 
-    def download_all(self, folders: list[str] = None) -> list[InboxMessage]:
+    def download_all(self, folders: Optional[list[str]] = None) -> list[InboxMessage]:
         """Download messages from multiple inbox folders.
 
         Args:

@@ -1,8 +1,6 @@
 """HTML parser for LiveJournal inbox pages."""
 
-from typing import Optional
-
-from lxml import etree
+from typing import Any, Optional
 
 from yalje.models.inbox import InboxMessage
 from yalje.models.user import InboxSender
@@ -25,7 +23,7 @@ class HTMLParser:
             ParsingError: If HTML parsing fails
         """
         # TODO: Implement
-        # 1. Parse HTML with lxml.html
+        # 1. Parse HTML
         # 2. Find pagination info ("Page X of Y")
         # 3. Find all message rows (class="InboxItem_Row")
         # 4. Extract data from each row
@@ -34,7 +32,7 @@ class HTMLParser:
         raise NotImplementedError("HTMLParser.parse_inbox_page not yet implemented")
 
     @staticmethod
-    def _extract_message_from_row(row: etree._Element) -> Optional[InboxMessage]:
+    def _extract_message_from_row(row: Any) -> Optional[InboxMessage]:
         """Extract inbox message from a table row.
 
         Args:
@@ -55,7 +53,7 @@ class HTMLParser:
         raise NotImplementedError("HTMLParser._extract_message_from_row not yet implemented")
 
     @staticmethod
-    def _extract_sender(row: etree._Element) -> Optional[InboxSender]:
+    def _extract_sender(row: Any) -> Optional[InboxSender]:
         """Extract sender information from message row.
 
         Args:
@@ -73,7 +71,7 @@ class HTMLParser:
         raise NotImplementedError("HTMLParser._extract_sender not yet implemented")
 
     @staticmethod
-    def _extract_pagination(doc: etree._Element) -> tuple[int, int]:
+    def _extract_pagination(doc: Any) -> tuple[int, int]:
         """Extract current page and total pages from HTML.
 
         Args:
@@ -92,7 +90,7 @@ class HTMLParser:
         raise NotImplementedError("HTMLParser._extract_pagination not yet implemented")
 
     @staticmethod
-    def _extract_msgid(row: etree._Element) -> Optional[int]:
+    def _extract_msgid(row: Any) -> Optional[int]:
         """Extract message ID from reply link.
 
         Args:

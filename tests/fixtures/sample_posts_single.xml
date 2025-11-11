@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<livejournal>
+  <entry>
+    <itemid>116736</itemid>
+    <eventtime>2023-01-01 00:00:00</eventtime>
+    <logtime>2023-01-01 00:00:00</logtime>
+    <subject>Simple Post</subject>
+    <event><![CDATA[<p>Simple content.</p>]]></event>
+    <security>public</security>
+    <allowmask>0</allowmask>
+  </entry>
+</livejournal>
