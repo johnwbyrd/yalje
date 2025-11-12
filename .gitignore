@@ -57,3 +57,4 @@ lj-backup*
 config.yaml
 .env
 credentials.json
+lj-backup.yaml
