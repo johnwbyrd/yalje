@@ -51,6 +51,7 @@ dmypy.json
 .yalje/
 lj-backup/
 backup/
+lj-backup*
 
 # Sensitive data
 config.yaml

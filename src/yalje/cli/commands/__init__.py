@@ -1,5 +1,6 @@
 """CLI commands."""
 
-from yalje.cli.commands import auth, convert, download
+# Optional subcommands (auth, convert) can be imported here in the future
+# Main download functionality is now in cli/main.py
 
-__all__ = ["auth", "download", "convert"]
+__all__ = []

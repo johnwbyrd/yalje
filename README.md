@@ -41,24 +41,29 @@ cp .env.example .env
 Then run yalje (it will automatically load from `.env`):
 
 ```bash
-# Download everything to a single YAML file
-yalje download --output lj-backup.yaml
+# Download everything (uses default output: lj-backup.yaml)
+yalje
 
-# Or specify date range for posts
-yalje download \
+# Specify output file
+yalje --output my-backup.yaml
+
+# Specify date range for posts
+yalje \
     --start-year 2020 --start-month 1 \
-    --end-year 2023 --end-month 12 \
-    --output lj-backup.yaml
+    --end-year 2023 --end-month 12
 
 # Skip certain content types
-yalje download --no-inbox --output lj-backup.yaml
+yalje --no-inbox --no-comments
+
+# Use short form for output
+yalje -o my-backup.yaml
 ```
 
 ### Using Command-Line Arguments
 
 ```bash
 # Provide credentials directly (less secure)
-yalje download --username your_username --password your_password --output lj-backup.yaml
+yalje --username your_username --password your_password
 ```
 
 ## Usage as Library
