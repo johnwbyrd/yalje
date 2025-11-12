@@ -1,7 +1,7 @@
 """Main CLI application."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 import click
 
@@ -12,6 +12,8 @@ from yalje.api.posts import PostsClient
 from yalje.core.auth import Authenticator
 from yalje.core.config import YaljeConfig
 from yalje.core.exceptions import AuthenticationError, YaljeError
+from yalje.exporters.json_exporter import JSONExporter
+from yalje.exporters.xml_exporter import XMLExporter
 from yalje.exporters.yaml_exporter import YAMLExporter
 from yalje.models.comment import Comment
 from yalje.models.export import ExportMetadata, LJExport
@@ -53,6 +55,13 @@ logger = get_logger("cli.main")
 @click.option("--start-month", type=int, help="Start month for posts (1-12)")
 @click.option("--end-year", type=int, help="End year for posts")
 @click.option("--end-month", type=int, help="End month for posts (1-12)")
+@click.option(
+    "--format",
+    "-f",
+    type=click.Choice(["yaml", "json", "xml"], case_sensitive=False),
+    default="yaml",
+    help="Output format (default: yaml)",
+)
 def cli(
     verbose: bool,
     quiet: bool,
@@ -66,6 +75,7 @@ def cli(
     start_month: Optional[int],
     end_year: Optional[int],
     end_month: Optional[int],
+    format: str,
 ) -> None:
     """yalje - Yet Another LiveJournal Exporter
 
@@ -103,6 +113,10 @@ def cli(
 
     # Initialize logging
     setup_logging(level=log_level)
+
+    # Adjust output filename based on format if using default
+    if output == Path("lj-backup.yaml") and format != "yaml":
+        output = Path(f"lj-backup.{format}")
 
     try:
         # Load configuration from .env and merge with CLI args
@@ -206,10 +220,20 @@ def cli(
             inbox=inbox_messages,
         )
 
-        # Export to YAML
-        logger.info(f"Writing to {output}...")
+        # Export to selected format
+        logger.info(f"Writing to {output} (format: {format})...")
         try:
-            exporter = YAMLExporter()
+            # Select exporter based on format
+            exporter: Union[YAMLExporter, JSONExporter, XMLExporter]
+            if format == "yaml":
+                exporter = YAMLExporter()
+            elif format == "json":
+                exporter = JSONExporter()
+            elif format == "xml":
+                exporter = XMLExporter()
+            else:
+                raise ValueError(f"Unknown format: {format}")
+
             exporter.export(export, output)
             logger.info(f"Export saved to {output}")
         except Exception as e:

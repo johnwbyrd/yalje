@@ -57,6 +57,12 @@ yalje --no-inbox --no-comments
 
 # Use short form for output
 yalje -o my-backup.yaml
+
+# Export to different formats
+yalje --format yaml  # Default, creates lj-backup.yaml
+yalje --format json  # Creates lj-backup.json
+yalje --format xml   # Creates lj-backup.xml
+yalje -f json -o my-backup.json  # Short form with custom filename
 ```
 
 ### Using Command-Line Arguments
