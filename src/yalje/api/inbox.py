@@ -6,6 +6,9 @@ from yalje.api.base import BaseAPIClient
 from yalje.core.config import YaljeConfig
 from yalje.core.session import HTTPSession
 from yalje.models.inbox import InboxMessage
+from yalje.utils.logging import get_logger
+
+logger = get_logger("api.inbox")
 
 
 class InboxClient(BaseAPIClient):
@@ -32,6 +35,7 @@ class InboxClient(BaseAPIClient):
         Raises:
             APIError: If download fails
         """
+        logger.info(f"Downloading inbox folder: {view}")
         all_messages = []
         page = 1
 
@@ -44,6 +48,7 @@ class InboxClient(BaseAPIClient):
 
             page += 1
 
+        logger.info(f"  → Downloaded {len(all_messages)} messages from folder '{view}'")
         return all_messages
 
     def download_page(self, view: str, page: int) -> tuple[list[InboxMessage], bool]:
@@ -61,13 +66,22 @@ class InboxClient(BaseAPIClient):
         Raises:
             APIError: If download fails
         """
-        # TODO: Implement
-        # 1. GET /inbox/?view={view}&page={page}
-        # 2. Parse HTML response
-        # 3. Extract messages from table rows
-        # 4. Check pagination for more pages
-        # 5. Convert to InboxMessage objects
-        raise NotImplementedError("InboxClient.download_page not yet implemented")
+        from yalje.parsers.html_parser import HTMLParser
+
+        logger.info(f"Downloading inbox page {page} (view={view})")
+
+        # Build URL with query parameters
+        url = self._build_url("/inbox/")
+        params = {"view": view, "page": str(page)}
+
+        # Make GET request
+        response = self.session.get(url, params=params)
+
+        # Parse HTML response using HTMLParser
+        messages, has_next_page = HTMLParser.parse_inbox_page(response.text)
+
+        logger.info(f"  → Downloaded {len(messages)} messages from page {page}")
+        return (messages, has_next_page)
 
     def download_all(self, folders: Optional[list[str]] = None) -> list[InboxMessage]:
         """Download messages from multiple inbox folders.
