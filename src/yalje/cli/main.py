@@ -203,7 +203,7 @@ def cli(
             posts=posts,
             comments=comments,
             usermap=usermap,
-            inbox_messages=inbox_messages,
+            inbox=inbox_messages,
         )
 
         # Export to YAML
