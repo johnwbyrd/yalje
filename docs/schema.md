@@ -2,14 +2,18 @@
 
 ## Overview
 
-The entire LiveJournal export is contained in **one YAML file** with the following top-level sections:
+The entire LiveJournal export is contained in **one file** (YAML, JSON, or XML format) with the following top-level sections:
 - `metadata` - Export information
 - `usermap` - User ID to username mappings
 - `posts` - All blog posts
 - `comments` - All comments
 - `inbox` - All inbox messages
 
-## File: `lj-backup.yaml`
+All three formats (YAML, JSON, XML) contain identical data with full fidelity. Choose the format that best suits your needs.
+
+## YAML Format (Default)
+
+**File:** `lj-backup.yaml`
 
 ```yaml
 metadata:
@@ -66,6 +70,85 @@ inbox:
     read: false
     bookmarked: false
 ```
+
+## JSON Format
+
+**File:** `lj-backup.json`
+
+```json
+{
+  "metadata": {
+    "export_date": "2024-11-11T12:30:00Z",
+    "lj_user": "username",
+    "yalje_version": "0.1.0",
+    "post_count": 150,
+    "comment_count": 1523,
+    "inbox_count": 215
+  },
+  "usermap": [
+    {"userid": 123, "username": "friend1"},
+    {"userid": 456, "username": "friend2"}
+  ],
+  "posts": [
+    {
+      "itemid": 116992,
+      "jitemid": 456,
+      "eventtime": "2023-01-15 14:30:00",
+      "logtime": "2023-01-15 14:30:00",
+      "subject": "Post Title",
+      "event": "<p>Post body with <b>HTML</b></p>",
+      "security": "public",
+      "allowmask": 0,
+      "current_mood": "happy",
+      "current_music": "Artist - Song"
+    }
+  ],
+  "comments": [...],
+  "inbox": [...]
+}
+```
+
+## XML Format
+
+**File:** `lj-backup.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<lj_export>
+  <metadata>
+    <export_date>2024-11-11T12:30:00Z</export_date>
+    <lj_user>username</lj_user>
+    <yalje_version>0.1.0</yalje_version>
+    <post_count>150</post_count>
+    <comment_count>1523</comment_count>
+    <inbox_count>215</inbox_count>
+  </metadata>
+  <usermap>
+    <user userid="123" username="friend1"/>
+    <user userid="456" username="friend2"/>
+  </usermap>
+  <posts>
+    <post>
+      <itemid>116992</itemid>
+      <jitemid>456</jitemid>
+      <eventtime>2023-01-15 14:30:00</eventtime>
+      <logtime>2023-01-15 14:30:00</logtime>
+      <subject>Post Title</subject>
+      <event><p>Post body with <b>HTML</b></p></event>
+      <security>public</security>
+      <allowmask>0</allowmask>
+      <current_mood>happy</current_mood>
+      <current_music>Artist - Song</current_music>
+    </post>
+  </posts>
+  <comments>...</comments>
+  <inbox>...</inbox>
+</lj_export>
+```
+
+## Field Definitions
+
+The following sections describe the data fields. These fields are consistent across all three export formats (YAML, JSON, XML).
 
 ## Metadata Section
 
@@ -179,10 +262,13 @@ comments:
 
 ## Implementation Notes
 
-This schema is generated from Pydantic models:
+This schema is generated from Pydantic models. All three formats use the same underlying data structure:
 
 ```python
 from yalje.models.export import LJExport
+from yalje.exporters.yaml_exporter import YAMLExporter
+from yalje.exporters.json_exporter import JSONExporter
+from yalje.exporters.xml_exporter import XMLExporter
 
 # Create export object
 export = LJExport(
@@ -193,9 +279,12 @@ export = LJExport(
     inbox=[...]
 )
 
-# Serialize to YAML
-import yaml
-yaml_str = yaml.dump(export.model_dump(), allow_unicode=True)
+# Export to different formats
+YAMLExporter().export(export, "lj-backup.yaml")
+JSONExporter().export(export, "lj-backup.json")
+XMLExporter().export(export, "lj-backup.xml")
+
+# All three files contain identical data
 ```
 
 ## See Also

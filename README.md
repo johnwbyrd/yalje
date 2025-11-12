@@ -5,8 +5,8 @@ A deep, modern Python tool for downloading and archiving all content from LiveJo
 ## Features
 
 - **Complete Export**: Download posts, comments, and inbox messages
-- **Single File Output**: Everything exports to one YAML file
-- **Multiple Formats**: Export to YAML or JSON
+- **Single File Output**: Everything exports to one file
+- **Multiple Formats**: Export to YAML, JSON, or XML
 - **Well-Structured**: Clear schema with Pydantic validation
 - **Library + CLI**: Use as a command-line tool or Python library
 - **Extensible**: Clean architecture for building custom importers
@@ -41,35 +41,42 @@ cp .env.example .env
 Then run yalje (it will automatically load from `.env`):
 
 ```bash
-# Download everything (uses default output: lj-backup.yaml)
+# Download everything (default: YAML format)
 yalje
-
-# Specify output file
-yalje --output my-backup.yaml
-
-# Specify date range for posts
-yalje \
-    --start-year 2020 --start-month 1 \
-    --end-year 2023 --end-month 12
-
-# Skip certain content types
-yalje --no-inbox --no-comments
-
-# Use short form for output
-yalje -o my-backup.yaml
 
 # Export to different formats
 yalje --format yaml  # Default, creates lj-backup.yaml
 yalje --format json  # Creates lj-backup.json
 yalje --format xml   # Creates lj-backup.xml
-yalje -f json -o my-backup.json  # Short form with custom filename
+
+# Short form with custom output filename
+yalje -f json -o my-backup.json
+yalje -f xml -o archive.xml
+
+# Specify output file (format auto-detected from extension)
+yalje --output my-backup.json
+yalje -o archive.xml
+
+# Specify date range for posts
+yalje --start-year 2020 --start-month 1 --end-year 2023 --end-month 12
+
+# Skip certain content types
+yalje --no-posts         # Download only comments and inbox
+yalje --no-comments      # Download only posts and inbox
+yalje --no-inbox         # Download only posts and comments
+
+# Combine options
+yalje --format json --no-inbox --start-year 2020
 ```
 
 ### Using Command-Line Arguments
 
 ```bash
-# Provide credentials directly (less secure)
+# Provide credentials directly (less secure than .env file)
 yalje --username your_username --password your_password
+
+# Combine with other options
+yalje --username your_username --password your_password --format xml -o backup.xml
 ```
 
 ## Usage as Library
@@ -79,8 +86,11 @@ from yalje.core.auth import Authenticator
 from yalje.core.config import YaljeConfig
 from yalje.api.posts import PostsClient
 from yalje.api.comments import CommentsClient
+from yalje.api.inbox import InboxClient
 from yalje.models.export import LJExport, ExportMetadata
 from yalje.exporters.yaml_exporter import YAMLExporter
+from yalje.exporters.json_exporter import JSONExporter
+from yalje.exporters.xml_exporter import XMLExporter
 
 # Create config
 config = YaljeConfig(username="your_username", password="your_password")
@@ -89,13 +99,15 @@ config = YaljeConfig(username="your_username", password="your_password")
 auth = Authenticator(config)
 session = auth.login(config.username, config.password)
 
-# Download posts
+# Download data
 posts_client = PostsClient(session, config)
 posts = posts_client.download_all(2020, 1, 2023, 12)
 
-# Download comments
 comments_client = CommentsClient(session, config)
 comments, usermap = comments_client.download_all()
+
+inbox_client = InboxClient(session, config)
+inbox = inbox_client.download_all()
 
 # Create export object
 metadata = ExportMetadata(lj_user=config.username, yalje_version="0.1.0")
@@ -104,17 +116,22 @@ export = LJExport(
     usermap=usermap,
     posts=posts,
     comments=comments,
-    inbox=[]
+    inbox=inbox
 )
 
-# Export to YAML (single file)
-exporter = YAMLExporter()
-exporter.export(export, "lj-backup.yaml")
+# Export to different formats
+YAMLExporter().export(export, "lj-backup.yaml")
+JSONExporter().export(export, "lj-backup.json")
+XMLExporter().export(export, "lj-backup.xml")
 ```
 
 ## Output Format
 
-All data is exported to a **single YAML file** with this structure:
+All data is exported to a **single file** in your chosen format (YAML, JSON, or XML).
+
+### YAML Format (Default)
+
+The YAML export has this structure:
 
 ```yaml
 metadata:
@@ -149,7 +166,50 @@ inbox:
     # ... more fields
 ```
 
-See [docs/schema.md](docs/schema.md) for complete format specification.
+### JSON Format
+
+The JSON export contains the same data in JSON format:
+
+```json
+{
+  "metadata": {
+    "export_date": "2024-11-11T12:30:00Z",
+    "lj_user": "username",
+    "yalje_version": "0.1.0",
+    "post_count": 150,
+    "comment_count": 1523,
+    "inbox_count": 215
+  },
+  "usermap": [...],
+  "posts": [...],
+  "comments": [...],
+  "inbox": [...]
+}
+```
+
+### XML Format
+
+The XML export contains the same data in XML format:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<lj_export>
+  <metadata>
+    <export_date>2024-11-11T12:30:00Z</export_date>
+    <lj_user>username</lj_user>
+    <yalje_version>0.1.0</yalje_version>
+    <post_count>150</post_count>
+    <comment_count>1523</comment_count>
+    <inbox_count>215</inbox_count>
+  </metadata>
+  <usermap>...</usermap>
+  <posts>...</posts>
+  <comments>...</comments>
+  <inbox>...</inbox>
+</lj_export>
+```
+
+All three formats contain identical data with full fidelity. See [docs/schema.md](docs/schema.md) for complete format specification.
 
 ## Documentation
 

@@ -33,21 +33,21 @@ Pydantic Models (validated)
       ↓
    Exporters
       ↓
-Single YAML File
+Single File (YAML/JSON/XML)
 ```
 
 ## Key Design Decisions
 
-### Single YAML File Export
+### Single File Export
 
-All data is exported to a single YAML file containing:
+All data is exported to a single file in YAML, JSON, or XML format containing:
 - Export metadata
 - Usermap (comment author mappings)
 - All posts
 - All comments
 - All inbox messages
 
-**Rationale**: Simplicity. One file to manage, easy to version control, easy to process.
+**Rationale**: Simplicity. One file to manage, easy to version control, easy to process. Multiple format options allow users to choose what works best for their workflow.
 
 ### Pydantic Models
 
@@ -67,9 +67,12 @@ This separation makes testing easier and allows parsers to be reused.
 ### Pluggable Exporters
 
 Exporters implement a common interface, making it easy to add new formats:
-- YAMLExporter (primary)
-- JSONExporter (alternative)
+- **YAMLExporter** - Default format, human-readable
+- **JSONExporter** - Structured data, machine-readable
+- **XMLExporter** - Universal interchange format
 - Could add: SQLiteExporter, MarkdownExporter, etc.
+
+All three formats contain identical data with full fidelity.
 
 ## Module Relationships
 
@@ -88,9 +91,11 @@ yalje/
 
 ### Adding a New Export Format
 
-1. Create new exporter in `exporters/`
-2. Implement `export()` and `load()` methods
-3. Add CLI command in `cli/commands/convert.py`
+1. Create new exporter class in `exporters/`
+2. Implement `export(data, output_path)` and `load(input_path)` methods
+3. Add exporter to `exporters/__init__.py`
+4. Add format choice to CLI `--format` option in `cli/main.py`
+5. Add tests in `tests/unit/test_exporters.py`
 
 ### Adding New Data Types
 
